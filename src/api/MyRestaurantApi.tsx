@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const useGetMyRestaurant = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const getMyRestaurantRequest = async (): Promise<Restaurant> => {
+  const getMyRestaurantRequest = async (): Promise<Restaurant | null> => {
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/my/restaurant/`, {
@@ -19,18 +19,31 @@ export const useGetMyRestaurant = () => {
       },
     });
 
+    if (response.status === 404) {
+      return null;
+    }
+
     if (!response.ok) {
       throw new Error("Failed to fetch restaurant");
     }
+
     return response.json();
   };
 
-  const { data: restaurant, isLoading } = useQuery(
-    "fetchMyRestaurant",
-    getMyRestaurantRequest
-  );
+  const {
+    data: restaurant,
+    isLoading,
+    error,
+  } = useQuery("fetchMyRestaurant", getMyRestaurantRequest, {
+    retry: false, //Don't retry on 404
+    refetchOnWindowFocus: false, // prevents unnecessary refetches
+  });
 
-  return { restaurant, isLoading };
+  return {
+    restaurant,
+    isLoading,
+    error,
+  };
 };
 
 //hook to create new restaurant

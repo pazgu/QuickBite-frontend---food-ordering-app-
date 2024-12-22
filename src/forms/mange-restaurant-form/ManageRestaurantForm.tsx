@@ -51,7 +51,7 @@ const formSchema = z
 type RestaurantFormData = z.infer<typeof formSchema>;
 
 type Props = {
-  restaurant?: Restaurant; //optional - if user does not created restaurant yet
+  restaurant: Restaurant | null | undefined;
   onSave: (restaurantFormData: FormData) => void;
   isLoading: boolean;
 };

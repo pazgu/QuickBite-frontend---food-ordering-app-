@@ -6,23 +6,27 @@ import {
 import ManageRestaurantForm from "../forms/mange-restaurant-form/ManageRestaurantForm";
 
 const ManageRestaurantPage = () => {
-  const { restaurant } = useGetMyRestaurant();
+  const { restaurant, isLoading: isLoadingRestaurant } = useGetMyRestaurant();
   const { createRestaurant, isLoading: isCreateLoading } =
     useCreateMyRestaurant();
   const { updateRestaurant, isLoading: isUpdateLoading } =
     useUpdateMyRestaurant();
 
   const isEditing = !!restaurant;
-  console.log(isEditing);
+  const isLoading = isLoadingRestaurant || isCreateLoading || isUpdateLoading;
 
   //whenever the page loads for the first time we check if the restaurant already exists for the user
   // !! means give me the truthy value of this variable
+
+  if (isLoadingRestaurant) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <ManageRestaurantForm
       restaurant={restaurant}
       onSave={isEditing ? updateRestaurant : createRestaurant}
-      isLoading={isCreateLoading || isUpdateLoading}
+      isLoading={isLoading}
     />
   );
 };
